@@ -1,0 +1,6 @@
+about elements
+x y type
+
+type info
+1->enemy(movable)
+2->key(collect)
