@@ -7,6 +7,10 @@
 #include<fstream>
 #include<sstream>
 #include<vector>
+
+#define speed 0.2
+
+
 using namespace std;
 HANDLE console;
 CONSOLE_FONT_INFOEX font{};
@@ -52,6 +56,12 @@ void printlog(string title,string message){
     MB_OK | MB_ICONINFORMATION
 );
 }
+int iftri(int px,int py,int x1,int y1,int x2,int y2,int x3,int y3){
+    int a = (x1 - px) * (y2 - y1) - (x2 - x1) * (y1 - py);
+    int b = (x2 - px) * (y3 - y2) - (x3 - x2) * (y2 - px);
+    int c = (x3 - px) * (y1 - y3) - (x1 - x3) * (y3 - px);
+    return (a >= 0 && b >= 0 && c >= 0) || (a <= 0 && b <= 0 && c <= 0);
+}//code from https://hi-develop.tistory.com/20
 int main(){
     //preprocess
     console=GetStdHandle(STD_OUTPUT_HANDLE);
@@ -75,7 +85,7 @@ int mainplay(string room,int num){
     for(int i=0;i<200;i++){
         for(int j=0;j<600;j++){
             buffer[i][j].Char.UnicodeChar=L'\u2588';
-            buffer[i][j].Attributes=13;
+            buffer[i][j].Attributes=12;
         }
     }
     WriteConsoleOutputW(console,&buffer[0][0],buf_size,start,&area);
@@ -133,7 +143,6 @@ while(1){
     ifright=false;
     ifup=false;
     //get input
-if(_kbhit()){
     if(GetAsyncKeyState('W') & 0x8000){
         ifw=true;
     }
@@ -155,7 +164,6 @@ if(_kbhit()){
     if(GetAsyncKeyState(VK_RIGHT) & 0x8000){
         ifright=true;
     }
-}   
     
     //apply movement
     if(ifleft){
@@ -168,11 +176,12 @@ if(_kbhit()){
     if(sight<0){
         sight+=360;
     }
+    
+    float sightrad=sight*3.14159265f/180.0f;
 
-
-    float sins=sin(sight);
-    float coss=cos(sight);
-    float tans=tan(sight);
+    float sins=sin(sightrad)*speed;
+    float coss=cos(sightrad)*speed;
+    float tans=tan(sightrad)*speed;
     if(ifw){
         player_x+=coss;
         player_y+=sins;
@@ -190,18 +199,18 @@ if(_kbhit()){
         }
     }
     if(ifs){
-        player_x+=coss;
+        player_x-=coss;
         player_y-=sins;
         if(roominfo[int(player_x)][int(player_y)]==1){
-            player_x-=coss;
+            player_x+=coss;
             player_y+=sins;
         }
     }
     if(ifd){
-        player_x-=sins;
+        player_x+=sins;
         player_y-=coss;
         if(roominfo[int(player_x)][int(player_y)]==1){
-            player_x+=sins;
+            player_x-=sins;
             player_y+=coss;
         }
     }
@@ -229,11 +238,29 @@ if(elements[i].type==1){
     //how to render
     //explore the sight and draw obst
     //add elements (if the pixel is already drawn,draw with dark yellow)
-    //aaa happy happt
+    //aaa happy happy
 
 
+    //시야 범위 측정
+    float leftsight=sight+60;
+    float rightsight=sight-60;
 
+    float lsrad=leftsight*3.14159265f/180.0f;
+    float rsrad=rightsight*3.14159265f/180.0f;
 
+    float cosls=cos(lsrad);
+    float sinls=sin(lsrad);
+
+    float cosrs=cos(rsrad);
+    float sinrs=sin(rsrad);
+
+    float ltarget_x=player_x+cosls*6;
+    float ltarget_y=player_y+sinls*6;
+
+    float rtarget_x=player_x+cosrs*6;
+    float rtarget_y=player_y+sinrs*6;
+
+    
 
 
     //add overlay
@@ -345,3 +372,4 @@ int mainmenu(){
         }
     }
 }
+//the end
