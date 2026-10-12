@@ -31,6 +31,7 @@ typedef struct elementinfo{
 
 
 CHAR_INFO buffer[200][600]{};
+float buffer_dis[600];
 DWORD written;//trash
 
 
@@ -56,10 +57,10 @@ void printlog(string title,string message){
     MB_OK | MB_ICONINFORMATION
 );
 }
-int iftri(int px,int py,int x1,int y1,int x2,int y2,int x3,int y3){
-    int a = (x1 - px) * (y2 - y1) - (x2 - x1) * (y1 - py);
-    int b = (x2 - px) * (y3 - y2) - (x3 - x2) * (y2 - px);
-    int c = (x3 - px) * (y1 - y3) - (x1 - x3) * (y3 - px);
+int iftri(float px,float py,float x1,float y1,float x2,float y2,float x3,float y3){
+    float a = (x1 - px) * (y2 - y1) - (x2 - x1) * (y1 - py);
+    float b = (x2 - px) * (y3 - y2) - (x3 - x2) * (y2 - px);
+    float c = (x3 - px) * (y1 - y3) - (x1 - x3) * (y3 - px);
     return (a >= 0 && b >= 0 && c >= 0) || (a <= 0 && b <= 0 && c <= 0);
 }//code from https://hi-develop.tistory.com/20
 int main(){
@@ -87,6 +88,9 @@ int mainplay(string room,int num){
             buffer[i][j].Char.UnicodeChar=L'\u2588';
             buffer[i][j].Attributes=12;
         }
+    }
+    for(int i=0;i<600;i++){
+        buffer_dis[i]=0;
     }
     WriteConsoleOutputW(console,&buffer[0][0],buf_size,start,&area);
     
@@ -134,7 +138,7 @@ int mainplay(string room,int num){
     //각 오브젝트의 크기: 
 while(1){
     //event tick
-    //remove input
+    //remove input and prev screen
     ifw=false;
     ifa=false;
     ifd=false;
@@ -142,6 +146,9 @@ while(1){
     ifleft=false;
     ifright=false;
     ifup=false;
+    for(int i=0;i<600;i++){
+        buffer_dis[i]=420.0f;
+    }
     //get input
     if(GetAsyncKeyState('W') & 0x8000){
         ifw=true;
@@ -232,16 +239,11 @@ if(elements[i].type==1){
         break;
     }
 
-
-
     //render screen(hardest)
     //how to render
     //explore the sight and draw obst
-    //add elements (if the pixel is already drawn,draw with dark yellow)
-    //aaa happy happy
-
-
-    //시야 범위 측정
+    
+     //시야 범위 측정
     float leftsight=sight+60;
     float rightsight=sight-60;
 
@@ -259,8 +261,11 @@ if(elements[i].type==1){
 
     float rtarget_x=player_x+cosrs*6;
     float rtarget_y=player_y+sinrs*6;
-
     
+    for(){
+
+    }
+
 
 
     //add overlay
